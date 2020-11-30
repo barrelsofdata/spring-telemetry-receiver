@@ -1,0 +1,47 @@
+plugins {
+    id "java"
+    id "org.springframework.boot" version "${springBootVersion}"
+}
+
+group "${projectGroup}"
+version "${projectVersion}"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: "org.springframework.boot", name:"spring-boot-starter-web", version:"${springBootVersion}"
+    implementation group: "org.springframework.boot", name:"spring-boot-starter-validation", version:"${springBootVersion}"
+    implementation group: "org.springframework.kafka", name: "spring-kafka", version: "${springKafkaVersion}"
+
+    implementation group: "org.projectlombok", name: "lombok", version: "${lombokVersion}"
+    annotationProcessor group: "org.projectlombok", name: "lombok", version: "${lombokVersion}"
+
+    testImplementation group: "org.springframework.boot", name: "spring-boot-starter-test", version:"${springBootVersion}"
+    testImplementation group: "org.springframework.kafka", name: "spring-kafka-test", version:"${springKafkaVersion}"
+}
+
+springBoot {
+    mainClass.set("${applicationClass}")
+}
+
+compileJava {
+    options.encoding = "UTF-8"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootBuildImage {
+    imageName = "${rootProject.name}:${projectVersion}"
+}
+
+bootRun {
+    if ( project.hasProperty('jvmArgs') ) {
+        jvmArgs project.jvmArgs.split('\\s+')
+    }
+}
