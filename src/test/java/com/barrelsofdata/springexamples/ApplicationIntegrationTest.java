@@ -4,6 +4,7 @@ import com.barrelsofdata.springexamples.service.TelemetryService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.assertj.core.api.Assertions;
+import org.awaitility.Durations;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,9 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @EmbeddedKafka
 @AutoConfigureMockMvc
-public class ApplicationIntegrationTest {
+class ApplicationIntegrationTest {
     private int NUMBER_OF_BROKERS = 2;
-    private boolean CONTROLLER_SHUTDOWN = false;
+    private boolean CONTROLLER_SHUTDOWN = true;
     private int NUMBER_OF_PARTITIONS = 2;
     @Value("${spring.kafka.producer.topic}")
     private String TOPIC;
@@ -80,7 +82,7 @@ public class ApplicationIntegrationTest {
             "{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}};{\"timestamp\":\"2020-11-25T09:53:14.000+00:00\",\"id\":123,\"type\":\"LEFT_MOUSE_BUTTON_CLICK\",\"payload\":{\"width\":213,\"height\":124,\"x\":1000.0,\"y\":5000.0}}",
             "{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"};{\"timestamp\":\"2020-11-25T09:53:14.000+00:00\",\"id\":123,\"type\":\"RIGHT_MOUSE_BUTTON_CLICK\",\"payload\":null}"}
             , delimiter = ';')
-    public void success(String inputJson, String kafkaJson) throws Exception {
+    void success(String inputJson, String kafkaJson) throws Exception {
         HttpHeaders headers = new HttpHeaders();
 
         mockMvc.perform(
@@ -98,7 +100,7 @@ public class ApplicationIntegrationTest {
                         content().string(HttpStatus.CREATED.getReasonPhrase())
                 );
 
-        Thread.sleep(1000);
+        await().pollDelay(Durations.ONE_SECOND).until(() -> true);
         ConsumerRecord<String, String> singleRecord = records.poll(100, TimeUnit.MILLISECONDS);
         Assertions.assertThat(singleRecord).isNotNull();
         Assertions.assertThat(singleRecord.key()).isNull();
@@ -110,7 +112,7 @@ public class ApplicationIntegrationTest {
             "{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}};{\"timestamp\":\"2020-11-25T09:53:14.000+00:00\",\"id\":123,\"type\":\"LEFT_MOUSE_BUTTON_CLICK\",\"payload\":{\"width\":213,\"height\":124,\"x\":1000.0,\"y\":5000.0}}",
             "{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"};{\"timestamp\":\"2020-11-25T09:53:14.000+00:00\",\"id\":123,\"type\":\"RIGHT_MOUSE_BUTTON_CLICK\",\"payload\":null}"}
             , delimiter = ';')
-    public void unsupportedMedia(String inputJson, String kafkaJson) throws Exception {
+    void unsupportedMedia(String inputJson, String kafkaJson) throws Exception {
         HttpHeaders headers = new HttpHeaders();
 
         mockMvc.perform(
@@ -128,7 +130,7 @@ public class ApplicationIntegrationTest {
                         content().string(HttpStatus.CREATED.getReasonPhrase())
                 );
 
-        Thread.sleep(1000);
+        await().pollDelay(Durations.ONE_SECOND).until(() -> true);
         ConsumerRecord<String, String> singleRecord = records.poll(100, TimeUnit.MILLISECONDS);
         Assertions.assertThat(singleRecord).isNotNull();
         Assertions.assertThat(singleRecord.key()).isNull();

@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
@@ -22,7 +22,7 @@ public class ApplicationErrorController implements ErrorController {
     @Autowired
     private ErrorAttributes errorAttributes;
 
-    @RequestMapping("/error")
+    @GetMapping(value = "/error")
     public ResponseEntity<ExceptionDto> handleError(WebRequest request) {
         Map<String, Object> requestErrors = errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults());
         Object statusObject = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE, RequestAttributes.SCOPE_REQUEST);
@@ -34,6 +34,7 @@ public class ApplicationErrorController implements ErrorController {
         exceptionBuilder.error(errorMessage.toString());
         HttpStatus status = statusObject != null ? HttpStatus.resolve(Integer.parseInt(statusObject.toString())) : HttpStatus.INTERNAL_SERVER_ERROR;
         ExceptionDto exception = exceptionBuilder.build();
+        assert status != null;
         return new ResponseEntity<>(exception, status);
     }
 

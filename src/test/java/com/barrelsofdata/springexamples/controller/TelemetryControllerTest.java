@@ -27,14 +27,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-public class TelemetryControllerTest {
+class TelemetryControllerTest {
     @MockBean private TelemetryService telemetryService;
     @MockBean private Kafka kafka;
     @Autowired private MockMvc mockMvc;
 
     @ParameterizedTest(name = "Success API request")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"}"})
-    public void success(String json) throws Exception {
+    void success(String json) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         Mockito.doNothing().when(telemetryService).receiveTelemetry(any(EventRequestDto.class));
 
@@ -56,7 +56,7 @@ public class TelemetryControllerTest {
 
     @ParameterizedTest(name = "Json conversion fail API response")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"}"})
-    public void failBadJson(String json) throws Exception {
+    void failBadJson(String json) throws Exception {
         String expectedErrorMessage = "Failed json conversion";
         HttpHeaders headers = new HttpHeaders();
         Mockito.doThrow(new JsonConversionException(expectedErrorMessage)).when(telemetryService).receiveTelemetry(any(EventRequestDto.class));
@@ -73,7 +73,7 @@ public class TelemetryControllerTest {
 
     @ParameterizedTest(name = "Unsupported media type")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"}}"})
-    public void unsupportedMediaType(String json) throws Exception {
+    void unsupportedMediaType(String json) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         Mockito.doNothing().when(telemetryService).receiveTelemetry(any(EventRequestDto.class));
 
@@ -89,7 +89,7 @@ public class TelemetryControllerTest {
 
     @ParameterizedTest(name = "Missing required field or wrong value for type, bad request")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"MOUSE_BUTTON_CLICK\"}"})
-    public void missingRequiredField(String json) throws Exception {
+    void missingRequiredField(String json) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         Mockito.doNothing().when(telemetryService).receiveTelemetry(any(EventRequestDto.class));
 
@@ -105,7 +105,7 @@ public class TelemetryControllerTest {
 
     @ParameterizedTest(name = "Method not allowed for non-PUT requests")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"}"})
-    public void methodNotAllowed(String json) throws Exception {
+    void methodNotAllowed(String json) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         Mockito.doNothing().when(telemetryService).receiveTelemetry(any(EventRequestDto.class));
 

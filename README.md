@@ -27,7 +27,11 @@ From the root of the project execute the below commands
 ```shell script
 ./gradlew bootRun -PjvmArgs="-D--spring.config.location=config/dev.properties"
 ```
-
+- Run SonarQube Code Analysis
+```
+docker run -d --rm --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:community
+./gradlew sonarqube
+```
 ## Run native
 ```shell script
 java -jar build/libs/spring-telemetry-receiver-1.0.jar --spring.config.location=config/dev.properties

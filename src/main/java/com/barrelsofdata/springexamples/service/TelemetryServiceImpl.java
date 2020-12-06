@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TelemetryServiceImpl implements TelemetryService {
-    private static final Logger logger = LoggerFactory.getLogger(TelemetryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TelemetryServiceImpl.class);
 
     @Autowired private Kafka producer;
 
@@ -29,7 +29,7 @@ public class TelemetryServiceImpl implements TelemetryService {
             throw new JsonConversionException("Failed json conversion");
         } catch (KafkaException e) {
             logger.error("Kafka exception for request {}", eventRequest);
-            // TODO: Handle what you want to do with the data here
+            // Handle what you want to do with the data here
         }
     }
 }

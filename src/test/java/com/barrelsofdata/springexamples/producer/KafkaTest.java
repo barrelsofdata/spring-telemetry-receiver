@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-public class KafkaTest {
+class KafkaTest {
     @MockBean private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired @InjectMocks private KafkaImpl producer;
@@ -33,7 +33,7 @@ public class KafkaTest {
 
     @ParameterizedTest(name = "Check successful send")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"}"})
-    public void successSend(String json) throws JsonProcessingException {
+    void successSend(String json) throws JsonProcessingException {
         EventRequestDto eventRequestDto = mapper.readValue(json, EventRequestDto.class);
         String kafkaPayload = mapper.writeValueAsString(eventRequestDto);
         Mockito.doReturn(new SettableListenableFuture<>()).when(kafkaTemplate).send(any(String.class), any(String.class));
@@ -42,7 +42,7 @@ public class KafkaTest {
 
     @ParameterizedTest(name = "Check failed send")
     @ValueSource(strings = {"{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"LEFT_MOUSE_BUTTON_CLICK\",\"pl\":{\"x\":1000,\"y\":5000,\"w\":213,\"h\":124}}","{\"ts\":\"1606297994000\",\"id\":\"123\",\"ty\":\"RIGHT_MOUSE_BUTTON_CLICK\"}"})
-    public void failedSend(String json) throws JsonProcessingException, InterruptedException {
+    void failedSend(String json) throws JsonProcessingException, InterruptedException {
         EventRequestDto eventRequestDto = mapper.readValue(json, EventRequestDto.class);
         String kafkaPayload = mapper.writeValueAsString(eventRequestDto);
         Mockito.doThrow(KafkaException.class).when(kafkaTemplate).send(any(String.class), any(String.class));
